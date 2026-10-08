@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이종진 ♥ 채현주 모바일 청첩장</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet 지도 CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --primary-color: #d4a373;
+            --secondary-color: #faedcd;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --bg-color: #fdfbf7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', 'Nanum Myeongjo', sans-serif;
+        }
+
+        body {
+            background-color: #e5e5e5;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--bg-color);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 메인 커버 섹션 */
+        .main-cover {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            max-height: 750px;
+        }
+
+        .main-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-cover .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            padding: 50px 20px 40px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .main-cover h1 {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .main-cover p {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        /* 공통 섹션 스타일 */
+        section {
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        section h2 {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.5rem;
+            color: #555;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary-color);
+            margin: 0 auto 25px;
+        }
+
+        /* 인사말 섹션 */
+        .greeting-text {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .couple-names {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .couple-names span {
+            font-weight: 700;
+            color: #222;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            background-color: #f0ebd8;
+            color: #444;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .contact-btn:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        /* 예식일시 & D-Day */
+        .date-location-box {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-top: 20px;
+        }
+
+        .calendar-date {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .d-day {
+            font-size: 1rem;
+            color: #777;
+            background: var(--secondary-color);
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+        }
+
+        /* 갤러리 섹션 */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .gallery-grid img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-grid img:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-grid img.wide {
+            grid-column: span 2;
+            height: 250px;
+        }
+
+        /* 지도 섹션 */
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 20px;
+            z-index: 1;
+        }
+
+        .location-info {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* 마음 전할 곳 (계좌번호) */
+        .account-box {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            text-align: left;
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .account-details {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copy-btn {
+            background-color: #e9ecef;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        /* 푸터 */
+        footer {
+            background-color: #333;
+            color: #aaa;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.85rem;
+        }
+
+        /* 토스트 팝업 알림 */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
+        @keyframes fadeout {
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: 0; opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 메인 커버 이미지 -->
+        <div class="main-cover">
+            <img src="wedding1.jpg" alt="웨딩 메인 사진">
+            <div class="overlay">
+                <h1>이종진 · 채현주</h1>
+                <p>2027년 10월 9일 오전 12시<br>전주 썬플라워</p>
+            </div>
+        </div>
+
+        <!-- 인사말 섹션 -->
+        <section>
+            <h2>INVITATION</h2>
+            <div class="divider"></div>
+            <p class="greeting-text">
+                서로가 바라보는 것만으로도<br>
+                따뜻한 행복을 느끼게 되는 사람을 만났습니다.<br><br>
+                이제 평생을 함께 하려 합니다.<br>
+                소중한 분들을 모시고 붉게 물드는 가을날,<br>
+                그 첫걸음을 내딛고자 하오니<br>
+                오셔서 축복해 주시면 감사하겠습니다.
+            </p>
+
+            <div class="couple-names">
+                신랑 <span>이종진</span> <a href="tel:010-5126-3021" class="contact-btn"><i class="fas fa-phone"></i> 연락하기</a>
+            </div>
+            <div class="couple-names" style="margin-top: 10px;">
+                신부 <span>채현주</span> <a href="tel:010-5842-3021" class="contact-btn"><i class="fas fa-phone"></i> 연락하기</a>
+            </div>
+        </section>
+
+        <!-- 예식 일시 섹션 -->
+        <section style="background-color: #fff;">
+            <h2>WEDDING DAY</h2>
+            <div class="divider"></div>
+            <div class="date-location-box" style="margin-top:0;">
+                <div class="calendar-date">2027년 10월 9일 금요일 12시</div>
+                <p style="color: var(--text-light); font-size: 0.95rem;">전주 썬플라워</p>
+                <div class="d-day" id="dday-text">D-day 계산중...</div>
+            </div>
+        </section>
+
+        <!-- 갤러리 섹션 -->
+        <section>
+            <h2>GALLERY</h2>
+            <div class="divider"></div>
+            <div class="gallery-grid">
+                <img src="wedding1.jpg" alt="웨딩사진1" class="wide">
+                <img src="wedding2.jpg" alt="웨딩사진2">
+                <img src="wedding3.jpg" alt="웨딩사진3">
+                <img src="wedding4.jpg" alt="웨딩사진4">
+                <img src="wedding5.jpg" alt="웨딩사진5">
+            </div>
+        </section>
+
+        <!-- 오시는 길 (지도) -->
+        <section style="background-color: #fff;">
+            <h2>LOCATION</h2>
+            <div class="divider"></div>
+            <div class="location-info">
+                <strong>전주 썬플라워</strong><br>
+                전북특별자치도 전주시 (상세 주소 입력란)
+            </div>
+            <!-- 무료 줌인/아웃 지원 Leaflet 지도 -->
+            <div id="map"></div>
+        </section>
+
+        <!-- 마음 전할 곳 (계좌번호) -->
+        <section>
+            <h2>마음 전하실 곳</h2>
+            <div class="divider"></div>
+            
+            <div class="account-box">
+                <div class="account-header">
+                    <span>신랑 이종진</span>
+                </div>
+                <div class="account-details">
+                    <span id="groom-account">국민은행 1002-135-630615</span>
+                    <button class="copy-btn" onclick="copyAccount('groom-account')">계좌복사</button>
+                </div>
+            </div>
+
+            <div class="account-box">
+                <div class="account-header">
+                    <span>신부 채현주</span>
+                </div>
+                <div class="account-details">
+                    <span id="bride-account">국민은행 1002-135-630615</span>
+                    <button class="copy-btn" onclick="copyAccount('bride-account')">계좌복사</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 푸터 -->
+        <footer>
+            <p>Copyright © 2027 이종진 & 채현주</p>
+        </footer>
+    </div>
+
+    <!-- 토스트 메시지 -->
+    <div id="toast">계좌번호가 복사되었습니다.</div>
+
+    <!-- Leaflet JS (무료 지도 라이브러리) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // D-day 계산
+        const weddingDate = new Date('2027-10-09T12:00:00');
+        const today = new Date();
+        const diffTime = weddingDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const ddayText = document.getElementById('dday-text');
+        
+        if (diffDays > 0) {
+            ddayText.innerText = `결혼식이 ${diffDays}일 남았습니다.`;
+        } else if (diffDays === 0) {
+            ddayText.innerText = `오늘이 드디어 결혼식 날입니다! 🎉`;
+        } else {
+            ddayText.innerText = `결혼한 지 ${Math.abs(diffDays)}일이 되었습니다.`;
+        }
+
+        // 계좌번호 복사 기능
+        function copyAccount(elementId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            // 계좌번호 숫자만 혹은 전체 텍스트 추출 (여기서는 전체 텍스트 또는 번호만 복사 가능)
+            const accountNumber = textToCopy.split(' ')[1]; 
+            
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('복사 실패:', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Leaflet 무료 지도 초기화 (전주 썬플라워 좌표 기준 설정, 줌인/아웃 완벽 지원)
+        // 전주 시청 혹은 예식장 대략 좌표 (35.8242, 127.1479)
+        const map = L.map('map').setView([35.8242, 127.1479], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([35.8242, 127.1479]).addTo(map)
+            .bindPopup('전주 썬플라워')
+            .openPopup();
+    </script>
+</body>
+</html>
